@@ -1,4 +1,6 @@
 import User from "../models/User.js";
+import mongoose from 'mongoose';
+
 // Create a new user
 export async function createUser(req, res, next) {
   try {
@@ -22,13 +24,21 @@ export async function createUser(req, res, next) {
 // Get user by ID
 export async function getUser(req, res, next) {
   try {
-    const user = await findById(req.params.userId);
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
+
     res.json(user);
   } catch (err) {
     next(err);
   }
 }
+
 
 // Update user by ID
 export async function updateUser(req, res, next) {
