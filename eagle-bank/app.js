@@ -1,15 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const userRoutes = require('./routes/userRoutes');
-const authRoutes = require('./routes/authRoutes');
-const accountRoutes = require('./routes/accountRoutes');
-const transactionRoutes = require('./routes/transactionRoutes');
-const errorHandler = require('./middleware/errorHandler');
+import express, { json } from 'express';
+import cors from 'cors';
+import userRoutes from './routes/userRoutes';
+import authRoutes from './routes/authRoutes';
+import accountRoutes from './routes/accountRoutes';
+import transactionRoutes from './routes/transactionRoutes';
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(json());
 
 app.use('/v1/users', userRoutes);
 app.use('/v1/auth', authRoutes);
@@ -18,4 +18,4 @@ app.use('/v1/accounts/:accountId/transactions', transactionRoutes);
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
