@@ -1,6 +1,6 @@
 import express, { json } from 'express';
 import cors from 'cors';
-import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes';
 import accountRoutes from './routes/accountRoutes';
 import transactionRoutes from './routes/transactionRoutes';
