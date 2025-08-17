@@ -1,9 +1,24 @@
+
+/**
+ * Transaction Controller
+ * Handles transaction creation and retrieval for user accounts.
+ * All responses exclude sensitive information.
+ *
+ * @module controllers/transactionController
+ */
 import Account from "../models/Account.js";
 import User from "../models/User.js";
 import Transaction from "../models/Transaction.js";
 import mongoose from 'mongoose';
 
-// Create a new Transaction
+/**
+ * Create a new transaction for the authenticated user.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function createTransaction(req, res, next) {
   try {
     const { transactionType, AccountNumber, SortCode, amount } = req.body;
@@ -41,6 +56,14 @@ export async function createTransaction(req, res, next) {
 }
 
 
+/**
+ * Get all transactions for the authenticated user.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function getTransactions(req, res, next) {
   try {
     const transactions = await Transaction.find({ userId: req.auth.userId });
@@ -51,6 +74,14 @@ export async function getTransactions(req, res, next) {
   }
 }
 
+/**
+ * Get transaction details by transaction ID for a specific account. Only the account owner can access their transaction.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function getTransaction(req, res, next) {
   try {
     const { accountId, transactionId } = req.params;

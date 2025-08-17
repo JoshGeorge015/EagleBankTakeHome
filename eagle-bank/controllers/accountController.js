@@ -1,8 +1,23 @@
+
+/**
+ * Account Controller
+ * Handles account creation, retrieval, updating, and deletion for users.
+ * All responses exclude sensitive information.
+ *
+ * @module controllers/accountController
+ */
 import Account from "../models/Account.js";
 import User from "../models/User.js";
 import mongoose from 'mongoose';
 
-// Create a new Account
+/**
+ * Create a new account for the authenticated user.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function createAccount(req, res, next) {
   try {
     const { accountType, accountStatus, AccountNumber, SortCode, balance } = req.body;
@@ -31,6 +46,14 @@ export async function createAccount(req, res, next) {
 }
 
 
+/**
+ * Get all accounts for the authenticated user.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function 
+ * @returns {Promise<void>}
+ */
 export async function getAccounts(req, res, next) {
   try {
     const accounts = await Account.find({ userId: req.auth.userId });
@@ -41,7 +64,14 @@ export async function getAccounts(req, res, next) {
 }
 
 
-// Get Account by ID
+/**
+ * Get account details by account ID. Only the account owner can access their account.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function getAccount(req, res, next) {
   try {
     const { accountId } = req.params;
@@ -57,7 +87,6 @@ export async function getAccount(req, res, next) {
        return res.status(404).json({ message: 'Account not found' });
     }
 
-
     res.status(200).json({ Account: AccountDetails, status: 'Account retrieved successfully' });
   } catch (err) {
     next(err);
@@ -65,6 +94,14 @@ export async function getAccount(req, res, next) {
 }
 
 
+/**
+ * Update account details. Only the account owner can update their account.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function updateAccount(req, res, next) {
   try {
     const { accountId } = req.params;
@@ -98,7 +135,14 @@ export async function updateAccount(req, res, next) {
   }
 }
 
-// Delete Account by ID
+/**
+ * Delete an account by ID. Only the account owner can delete their account.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function deleteAccount(req, res, next) {
   try {
     const { accountId } = req.params;

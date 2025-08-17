@@ -1,5 +1,13 @@
+
+/**
+ * Error Handling Middleware
+ * Handles errors and sends a server error response.
+ *
+ * @module middleware/errorHandler
+ */
 const errorHandler = (err, req, res, next) => {
   console.error("error processing request"+err.stack);
   res.status(500).json({ message: 'Server Error'+ err });
 };
+
 export default errorHandler;

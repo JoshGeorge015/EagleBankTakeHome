@@ -1,3 +1,10 @@
+
+/**
+ * Express Application Setup
+ * Configures middleware and routes for the Eagle Bank API.
+ *
+ * @module app
+ */
 import express, { json } from 'express';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';

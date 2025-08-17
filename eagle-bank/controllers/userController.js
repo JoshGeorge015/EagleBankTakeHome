@@ -1,9 +1,24 @@
+
+/**
+ * User Controller
+ * Handles user registration, authentication, profile management, and deletion.
+ * All responses exclude sensitive information such as passwords.
+ *
+ * @module controllers/userController
+ */
 import User from "../models/User.js";
 import mongoose from 'mongoose';
 import jsonwebtoken from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-// Create a new user
+/**
+ * Create a new user account.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function createUser(req, res, next) {
   try {
     const { name, email, password, description } = req.body;
@@ -33,7 +48,14 @@ export async function createUser(req, res, next) {
   }
 }
 
-// Get user by ID
+/**
+ * Get user details by user ID. Only the authenticated user can access their own details.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function getUser(req, res, next) {
   try {
     const { userId } = req.params;
@@ -54,7 +76,14 @@ export async function getUser(req, res, next) {
   }
 }
 
-// Login user
+/**
+ * Authenticate user and return a JWT token.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function loginUser(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -82,11 +111,27 @@ export async function loginUser(req, res, next) {
   }
 }
 
+/**
+ * Log out the user by clearing the authentication cookie.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function logoutUser(req, res, next) {
   res.clearCookie('token');
   res.status(200).json({ message: 'Logged out successfully' });
 }
 
+/**
+ * Update user details. Only the authenticated user can update their own details.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function updateUser(req, res, next) {
   try {
     if (req.auth.userId !== req.params.userId) {
@@ -120,7 +165,14 @@ export async function updateUser(req, res, next) {
   }
 }
 
-// Delete user by ID
+/**
+ * Delete a user by ID. Only the authenticated user can delete their own account.
+ *
+ * @param Request req - Express request object
+ * @param Response res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export async function deleteUser(req, res, next) {
   try {
     if (req.auth.userId !== req.params.userId) {

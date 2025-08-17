@@ -1,7 +1,19 @@
+
+/**
+ * User Routes
+ * Defines routes for user registration, authentication, profile management, and deletion.
+ *
+ * @module routes/userRoutes
+ */
 import { Router } from 'express';
 import { createUser, getUser, updateUser, deleteUser, loginUser, logoutUser} from '../controllers/userController.js';
-import requireAuth from '../middleware/userAuth.js';
+import requireAuth from '../middleware/userAuth.js'; // Add middleware to protect authenticated routes using jwt bearer token
 
+
+/**
+ * Express router for user routes.
+ * @type {import('express').Router}
+ */
 const router = Router();
 
 router.post('/', createUser);
