@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import mongoose from 'mongoose';
 import jsonwebtoken from 'jsonwebtoken';
-import bcrypt from 'bcrypt'; // Ensure bcrypt is imported
+import bcrypt from 'bcrypt';
 
 // Create a new user
 export async function createUser(req, res, next) {
@@ -74,6 +74,7 @@ export async function loginUser(req, res, next) {
 
     const userObj = user.toObject();
     delete userObj.password;
+    res.cookie('token', token, { httpOnly: true });
 
     res.status(200).json({ user: userObj, token });
   } catch (err) {
@@ -82,6 +83,7 @@ export async function loginUser(req, res, next) {
 }
 
 export async function logoutUser(req, res, next) {
+  res.clearCookie('token');
   res.status(200).json({ message: 'Logged out successfully' });
 }
 

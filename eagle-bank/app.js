@@ -1,9 +1,8 @@
 import express, { json } from 'express';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
-import authRoutes from './routes/authRoutes';
-import accountRoutes from './routes/accountRoutes';
-import transactionRoutes from './routes/transactionRoutes';
+import accountRoutes from './routes/accountRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
 
@@ -13,7 +12,6 @@ app.use(cors());
 app.use(json());
 
 app.use('/v1/users', userRoutes);
-app.use('/v1/auth', authRoutes);
 app.use('/v1/accounts', accountRoutes);
 app.use('/v1/accounts/:accountId/transactions', transactionRoutes);
 
