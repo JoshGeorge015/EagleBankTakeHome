@@ -1,12 +1,11 @@
 import { Router } from 'express';
+import {createTransaction, getTransaction, getTransactions} from '../controllers/transactionController.js';
+
 import requireAuth from '../middleware/userAuth.js';
 const router = Router();
 
-// router.post('/', createUser);
-// router.post('/login', loginUser);
-// router.post('/logout', requireAuth, logoutUser);
-// router.get('/:userId', requireAuth, getUser);
-// router.patch('/:userId', requireAuth, updateUser);
-// router.delete('/:userId', requireAuth, deleteUser);
+router.post('/', requireAuth, createTransaction);
+router.get('/', requireAuth, getTransactions);
+router.get('/:transactionId', requireAuth, getTransaction);
 
 export default router;
