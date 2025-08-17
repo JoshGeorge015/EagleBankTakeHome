@@ -1,4 +1,5 @@
 import Account from "../models/Account.js";
+import User from "../models/User.js";
 import mongoose from 'mongoose';
 
 // Create a new Account
@@ -21,12 +22,24 @@ export async function createAccount(req, res, next) {
     }
 
     const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, AccountNumber, SortCode, balance });
+    const UserObj = await User.findByIdAndUpdate( req.auth.userId, { bankAccount: true }); //updateUser
 
     res.status(201).json({ AccountObj, status: 'Account created successfully' });
   } catch (err) {
     next(err);
   }
 }
+
+
+export async function getAccounts(req, res, next) {
+  try {
+    const accounts = await Account.find({ userId: req.auth.userId });
+    res.status(200).json({ accounts, status: 'Accounts retrieved successfully' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 
 // Get Account by ID
 export async function getAccount(req, res, next) {
@@ -56,7 +69,7 @@ export async function updateAccount(req, res, next) {
   try {
     const { accountId } = req.params;
     const AccountDetails = await Account.findById(accountId);
-    console.error(req.params);
+
     if (!AccountDetails) {
       return res.status(404).json({ message: 'Account not found' });
     }
