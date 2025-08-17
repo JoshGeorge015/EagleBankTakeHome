@@ -1,0 +1,225 @@
+{
+	"info": {
+		"_postman_id": "9e67b47e-da51-40af-8c1c-c91a3819aed4",
+		"name": "EagleBank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24172191"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": []
+		},
+		{
+			"name": "getUser",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEwODI3YmYxZTk2ODc5ZjI0MTk5NWUiLCJpYXQiOjE3NTU0NDUwNjAsImV4cCI6MTc1NTQ0ODY2MH0.BCNJpt5O75jZSBGgDCHd2GxygS7Jc3_D8aYkK8PGYsQ"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{baseURL}}/v1/users/68a0827bf1e96879f241995e"
+			},
+			"response": []
+		},
+		{
+			"name": "getAnotherUser Invalid",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEwOGIwOTllZWY0YjQ4ZmQ4Zjc0ZTIiLCJpYXQiOjE3NTUzNTE4MTcsImV4cCI6MTc1NTM1NTQxN30.CFaVX-k57cg6U30SsNzgewH8468PWRZDVfDZdLzV4xY"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{baseURL}}/v1/users/68a08b099eef4b48fd8f74w3"
+			},
+			"response": []
+		},
+		{
+			"name": "getAnotherUser Restricted",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEwOGIwOTllZWY0YjQ4ZmQ4Zjc0ZTIiLCJpYXQiOjE3NTUzNTE4MTcsImV4cCI6MTc1NTM1NTQxN30.CFaVX-k57cg6U30SsNzgewH8468PWRZDVfDZdLzV4xY"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{baseURL}}/v1/users/68a0871e801fc8e9c615f8ec"
+			},
+			"response": []
+		},
+		{
+			"name": "createUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"test\",\r\n  \"email\": \"test121@example.com\",\r\n  \"password\": \"secure123\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/v1/users?name=test&email=test@email.com&password=testPass&description=TestUser",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"v1",
+						"users"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "test"
+						},
+						{
+							"key": "email",
+							"value": "test@email.com"
+						},
+						{
+							"key": "password",
+							"value": "testPass"
+						},
+						{
+							"key": "description",
+							"value": "TestUser"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateUser",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEwODI3YmYxZTk2ODc5ZjI0MTk5NWUiLCJpYXQiOjE3NTU0NDUwNjAsImV4cCI6MTc1NTQ0ODY2MH0.BCNJpt5O75jZSBGgDCHd2GxygS7Jc3_D8aYkK8PGYsQ"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"test11\",\r\n    \"email\": \"test131@example.com\",\r\n    \"password\": \"secure123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseURL}}/v1/users/68a0871e801fc8e9c615f8ec"
+			},
+			"response": []
+		},
+		{
+			"name": "createUser Invalid",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"test\",\r\n  \"password\": \"secure123\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/v1/users?name=test12312&description=TestUser",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"v1",
+						"users"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "test12312"
+						},
+						{
+							"key": "description",
+							"value": "TestUser"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"test\",\r\n  \"email\": \"test11@example.com\",\r\n  \"password\": \"secure123\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:5000/v1/users/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseURL}}/v1/users/logout"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{baseURL}}/v1/users/689fcc4752fcdf8ee68de2bb"
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "localhost:5000",
+			"type": "default"
+		}
+	]
+}
