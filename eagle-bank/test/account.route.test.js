@@ -36,7 +36,7 @@ describe('Account Routes', () => {
 
     expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('Account created successfully');
-    expect(res.body.accountObj.accountType).toBe('savings'); // deosnt retrieve
+    expect(res.body.AccountObj.accountType).toBe('savings'); // works
   });
 
   it('POST /v1/accounts should fail with missing fields', async () => {

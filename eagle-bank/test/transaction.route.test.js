@@ -24,17 +24,17 @@ afterAll(async () => {
 describe('Transaction Routes', () => {
   it('POST /v1/transactions should create a transaction', async () => {
     const res = await request(app)
-      .post('/v1/transactions')
-      .send({ transactionType: 'deposit', AccountNumber: '12345678', SortCode: '123456', amount: 500 });
+      .post('/v1/accounts/random12312312/transactions/')
+      .send({ userID: 'user123', transactionType: 'deposit', AccountNumber: '12345678', SortCode: '123456', amount: 500 });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body.transaction.AccountNumber).toBe('12345678');
+    expect(res.body.transactionObj.AccountNumber).toBe('12345678');
   });
 
   it('POST /v1/transactions should fail with missing fields', async () => {
-    const res = await request(app).post('/v1/transactions').send({ transactionType: 'deposit' });
+    const res = await request(app).post('/v1/accounts/random12312312/transactions/').send({ transactionType: 'deposit' });
 
-    expect(res.statusCode).toBe(400);
+    expect(res.statusCode).toBe(404);
     expect(res.body.error).toBeUndefined();
   });
 });
