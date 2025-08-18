@@ -21,7 +21,7 @@ import mongoose from 'mongoose';
 export async function createAccount(req, res, next) {
   try {
     const { accountType, accountStatus, AccountNumber, SortCode, balance } = req.body;
-    console.log(req.body);
+
     if (!accountType || !accountStatus || !AccountNumber || !SortCode || !balance) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -39,7 +39,7 @@ export async function createAccount(req, res, next) {
     const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, AccountNumber, SortCode, balance });
     const UserObj = await User.findByIdAndUpdate( req.auth.userId, { bankAccount: true }); //updateUser
 
-    res.status(201).json({ AccountObj, status: 'Account created successfully' });
+    res.status(201).json({ AccountObj: AccountObj, status: 'Account created successfully' });
   } catch (err) {
     next(err);
   }

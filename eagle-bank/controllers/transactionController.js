@@ -34,6 +34,9 @@ export async function createTransaction(req, res, next) {
     if (!checkAccount.id) {
       return res.status(404).json({ message: 'Account not found' });
     }
+    if(checkAccount.status !== 'active') {
+      return res.status(403).json({ message: 'Forbidden - Inactive account' });
+    }
     if(checkAccount.userId !== req.auth.userId && transactionType in ['withdrawal', 'deposit']) {
       return res.status(403).json({ message: 'Forbidden - Unable to perform this transaction' });
     }
