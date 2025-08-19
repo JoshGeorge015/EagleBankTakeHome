@@ -1,9 +1,10 @@
-// Account controller unit tests
-  import * as accountController from '../controllers/accountController.js';
-
 import { jest } from '@jest/globals';
+import * as accountController from '../controllers/accountController.js';
+import Account from '../models/Account.js';
+import User from '../models/User.js';
 
- jest.mock('../models/Account.js', () => ({
+// Mock Account model
+jest.mock('../models/Account.js', () => ({
   __esModule: true,
   default: {
     findOne: jest.fn(),
@@ -14,6 +15,7 @@ import { jest } from '@jest/globals';
   }
 }));
 
+// Mock User model
 jest.mock('../models/User.js', () => ({
   __esModule: true,
   default: {
@@ -23,71 +25,88 @@ jest.mock('../models/User.js', () => ({
   }
 }));
 
-  import Account from '../models/Account.js';
-  import User from '../models/User.js';
+describe('Account Controller', () => {
+  let req, res, next;
 
-  describe('Account Controller', () => {
-    let req, res, next;
-    beforeEach(() => {
-      req = { body: {}, auth: { userId: 'user123' }, params: {} };
-      res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      next = jest.fn();
-      jest.clearAllMocks();
-    });
+  beforeEach(() => {
+    req = { body: {}, auth: { userId: 'user123' }, params: {} };
+    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    next = jest.fn();
 
-    it('should have a createAccount function', () => {
-      expect(typeof accountController.createAccount).toBe('function');
-    });
+    jest.clearAllMocks();
 
-    it('should create an account and return 201', async () => {
-      req.body = {
-        accountType: 'savings',
-        accountStatus: 'active',
-        AccountNumber: '12345678',
-        SortCode: '123456',
-        balance: 1000
-      };
+    // Spy on model methods
+    jest.spyOn(Account, 'findOne').mockResolvedValue(null);
+    jest.spyOn(Account, 'create').mockResolvedValue({});
+    jest.spyOn(User, 'findByIdAndUpdate').mockResolvedValue({});
+  });
 
-      Account.findOne.mockResolvedValue(null);
-      Account.create.mockResolvedValue({ ...req.body });
-      User.findByIdAndUpdate.mockResolvedValue({ bankAccount: true });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
-      await accountController.createAccount(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: expect.any(String) }));
-    });
+  it('should have a createAccount function', () => {
+    expect(typeof accountController.createAccount).toBe('function');
+  });
 
-    it('should return 400 if required fields are missing', async () => {
-      req.body = { accountType: 'savings' };
-      await accountController.createAccount(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
-    });
+  it('should create an account and return 201', async () => {
+    req.body = {
+      accountType: 'savings',
+      accountStatus: 'active',
+      AccountNumber: '12345678',
+      SortCode: '123456',
+      balance: 1000
+    };
 
-    it('should return 409 if account already exists', async () => {
-      req.body = {
-        accountType: 'savings',
-        accountStatus: 'active',
-        AccountNumber: '12345678',
-        SortCode: '123456',
-        balance: 1000
-      };
-      Account.findOne.mockResolvedValue({});
-      await accountController.createAccount(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(409);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
-    });
+    Account.findOne.mockResolvedValue(null);
+    Account.create.mockResolvedValue({ ...req.body });
+    User.findByIdAndUpdate.mockResolvedValue({ bankAccount: true });
 
-    it('should call next(err) on unexpected error', async () => {
-      req.body = {
-        accountType: 'savings',
-        accountStatus: 'active',
-        AccountNumber: '12345678',
-        SortCode: '123456',
-        balance: 1000
-      };
-      Account.findOne.mockRejectedValue(new Error('DB error'));
-      await accountController.createAccount(req, res, next);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
-    });
-    });
+    await accountController.createAccount(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: expect.any(String) }));
+  });
+
+  it('should return 400 if required fields are missing', async () => {
+    req.body = { accountType: 'savings' };
+
+    await accountController.createAccount(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
+  });
+
+  it('should return 409 if account already exists', async () => {
+    req.body = {
+      accountType: 'savings',
+      accountStatus: 'active',
+      AccountNumber: '12345678',
+      SortCode: '123456',
+      balance: 1000
+    };
+
+    Account.findOne.mockResolvedValue({ AccountNumber: '12345678', SortCode: '123456' });
+
+    await accountController.createAccount(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
+  });
+
+  it('should call next(err) on unexpected error', async () => {
+    req.body = {
+      accountType: 'savings',
+      accountStatus: 'active',
+      AccountNumber: '12345678',
+      SortCode: '123456',
+      balance: 1000
+    };
+
+    Account.findOne.mockRejectedValue(new Error('DB error'));
+
+    await accountController.createAccount(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+  });
+});

@@ -5,7 +5,10 @@ jest.mock('../models/User.js', () => ({
   __esModule: true,
   default: {
     findOne: jest.fn(),
-    create: jest.fn()
+    create: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    deleteOne: jest.fn()
   }
 }));
 
@@ -28,6 +31,7 @@ describe('User Controller', () => {
       json: jest.fn(),
     };
 
+    jest.spyOn(User, 'findOne').mockResolvedValue(null);
     User.findOne.mockResolvedValue(null); // check there is no existing user
     User.create.mockResolvedValue({
       ...req.body,

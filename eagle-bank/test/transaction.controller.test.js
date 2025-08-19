@@ -1,5 +1,6 @@
 import * as transactionController from '../controllers/transactionController.js';
-
+import Account from '../models/Account.js';
+import Transaction from '../models/Transaction.js';
 import { jest } from '@jest/globals';
 jest.mock('../models/Account.js', () => ({
   __esModule: true,
@@ -21,16 +22,22 @@ jest.mock('../models/Transaction.js', () => ({
   }
 }));
 
-import Account from '../models/Account.js';
-import Transaction from '../models/Transaction.js';
-
 describe('Transaction Controller', () => {
   let req, res, next;
+
   beforeEach(() => {
     req = { body: {}, auth: { userId: 'user123' }, params: {} };
     res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     next = jest.fn();
+
     jest.clearAllMocks();
+
+    jest.spyOn(Account, 'findOne').mockResolvedValue(null);
+    jest.spyOn(Transaction, 'create').mockResolvedValue({});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('should have a createTransaction function', () => {
@@ -39,21 +46,25 @@ describe('Transaction Controller', () => {
 
   it('should create a transaction and return 201', async () => {
     req.body = {
+      userId: 'user123',
       transactionType: 'deposit',
       AccountNumber: '12345678',
       SortCode: '123456',
       amount: 500
     };
+
     const fakeAccount = {
       id: 'acc1',
       userId: 'user123',
       balance: 1000,
       save: jest.fn()
     };
-    Account.create.mockResolvedValue(fakeAccount);
+
+    Account.findOne.mockResolvedValue(fakeAccount);
     Transaction.create.mockResolvedValue({ ...req.body });
 
     await transactionController.createTransaction(req, res, next);
+
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: expect.any(String) }));
     expect(fakeAccount.save).toHaveBeenCalled();
@@ -61,7 +72,9 @@ describe('Transaction Controller', () => {
 
   it('should return 400 if required fields are missing', async () => {
     req.body = { transactionType: 'deposit' };
+
     await transactionController.createTransaction(req, res, next);
+
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
   });
@@ -73,8 +86,11 @@ describe('Transaction Controller', () => {
       SortCode: '123456',
       amount: 500
     };
-    Account.findOne.mockResolvedValue({AccountNumber: req.body.AccountNumber});
+
+    Account.findOne.mockResolvedValue(null);
+
     await transactionController.createTransaction(req, res, next);
+
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
   });
@@ -86,14 +102,18 @@ describe('Transaction Controller', () => {
       SortCode: '123456',
       amount: 500
     };
+
     const fakeAccount = {
       id: 'acc1',
       userId: 'otherUser',
       balance: 1000,
       save: jest.fn()
     };
+
     Account.findOne.mockResolvedValue(fakeAccount);
+
     await transactionController.createTransaction(req, res, next);
+
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
   });
@@ -105,14 +125,18 @@ describe('Transaction Controller', () => {
       SortCode: '123456',
       amount: 2000
     };
+
     const fakeAccount = {
       id: 'acc1',
       userId: 'user123',
       balance: 1000,
       save: jest.fn()
     };
+
     Account.findOne.mockResolvedValue(fakeAccount);
+
     await transactionController.createTransaction(req, res, next);
+
     expect(res.status).toHaveBeenCalledWith(422);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.any(String) }));
   });
@@ -124,8 +148,11 @@ describe('Transaction Controller', () => {
       SortCode: '123456',
       amount: 500
     };
+
     Account.findOne.mockRejectedValue(new Error('DB error'));
+
     await transactionController.createTransaction(req, res, next);
+
     expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
