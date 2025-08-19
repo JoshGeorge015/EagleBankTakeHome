@@ -3,7 +3,7 @@ import request from 'supertest';
 import express from 'express';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import transactionRoutes from '../routes/userRoutes.js';
+import transactionRoutes from '../routes/transactionRoutes.js';
 
 const app = express();
 app.use(express.json());
