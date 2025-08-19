@@ -32,6 +32,7 @@ describe('User Controller', () => {
     };
 
     jest.spyOn(User, 'findOne').mockResolvedValue(null);
+    jest.spyOn(User, 'create').mockResolvedValue("success");
     User.findOne.mockResolvedValue(null); // check there is no existing user
     User.create.mockResolvedValue({
       ...req.body,

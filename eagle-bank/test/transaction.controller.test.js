@@ -9,7 +9,8 @@ jest.mock('../models/Account.js', () => ({
     create: jest.fn(),
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
-    deleteOne: jest.fn()
+    deleteOne: jest.fn(),
+    save: jest.fn()
   }
 }));
 
@@ -18,7 +19,8 @@ jest.mock('../models/Transaction.js', () => ({
   default: {
     findById: jest.fn(),
     findOne: jest.fn(),
-    create: jest.fn()
+    create: jest.fn(),
+    save: jest.fn()
   }
 }));
 
@@ -34,6 +36,7 @@ describe('Transaction Controller', () => {
 
     jest.spyOn(Account, 'findOne').mockResolvedValue(null);
     jest.spyOn(Transaction, 'create').mockResolvedValue({});
+
   });
 
   afterEach(() => {
@@ -57,13 +60,16 @@ describe('Transaction Controller', () => {
       id: 'acc1',
       userId: 'user123',
       balance: 1000,
+      accountStatus: 'active',
+      AccountNumber: '12345678',
+      SortCode: '123456',
       save: jest.fn()
     };
-
-    Account.findOne.mockResolvedValue(fakeAccount);
+    Account.save.mockResolvedValue(fakeAccount);
     Transaction.create.mockResolvedValue({ ...req.body });
 
     await transactionController.createTransaction(req, res, next);
+
 
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: expect.any(String) }));
