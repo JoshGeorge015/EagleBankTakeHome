@@ -20,23 +20,23 @@ import mongoose from 'mongoose';
  */
 export async function createAccount(req, res, next) {
   try {
-    const { accountType, accountStatus, AccountNumber, SortCode, balance } = req.body;
+    const { accountType, accountStatus, SortCode, balance } = req.body;
 
-    if (!accountType || !accountStatus || !AccountNumber || !SortCode || !balance) {
+    if (!accountType || !accountStatus ||  !SortCode || !balance) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    if (accountType.length < 2 || accountStatus.length < 5 || AccountNumber.length < 6 || SortCode.length < 6 || balance < 0) {
+    if (accountType.length < 2 || accountStatus.length < 5 || SortCode.length < 6 || balance < 0) {
       return res.status(400).json({
-        message: 'Invalid Account details, please ensure your accountType is at least 2 characters, accountStatus is at least 5 characters, and AccountNumber, SortCode are valid numbers.'
+        message: 'Invalid Account details, please ensure your accountType is at least 2 characters, accountStatus is at least 5 characters, and SortCode is at least 6 characters long, and balance is a valid number.'
       });
     }
 
-    const existing = await Account.findOne({ AccountNumber });
+    const existing = await Account.findOne({ userId: req.auth.userId, accountType: accountType });
     if (existing) {
       return res.status(409).json({ message: 'Existing account found, unable to create' });
     }
 
-    const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, AccountNumber, SortCode, balance });
+    const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, SortCode, balance });
     const UserObj = await User.findByIdAndUpdate( req.auth.userId, { bankAccount: true }); //updateUser
 
     res.status(201).json({ AccountObj: AccountObj, status: 'Account created successfully' });
@@ -80,7 +80,8 @@ export async function getAccount(req, res, next) {
     }
  
     const AccountDetails = await Account.findById(accountId);
-       if (req.auth.userId !== AccountDetails.userId) {
+    console.log(AccountDetails);
+    if (req.auth.userId !== AccountDetails.userId) {
       return res.status(403).json({ message: 'Forbidden - Unable to access another Account details' });
     }
     if (!AccountDetails) {
@@ -155,7 +156,10 @@ export async function deleteAccount(req, res, next) {
     }
 
     const AccountToDelete = await Account.findByIdAndDelete(req.params.accountId);
-
+    const accounts = await Account.find({ userId: req.auth.userId });
+    if(accounts.length===0) {
+      await User.findByIdAndUpdate(req.auth.userId, { bankAccount: false });
+    }
     res.status(200).json({ message: 'Account deleted' });
   } catch (err) {
     next(err);

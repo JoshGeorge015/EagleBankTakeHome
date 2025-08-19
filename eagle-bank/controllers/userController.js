@@ -25,7 +25,7 @@ export async function createUser(req, res, next) {
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    if (name.length < 2 || email.length < 5 || password.length < 6) {
+    if (name.length < 2 || email.length < 5 || password.length < 6 || !email.includes('@') || !email.includes('.')) {
       return res.status(400).json({
         message: 'Invalid User details, please ensure your name is at least 2 characters, email is at least 5 characters, and password is at least 6 characters long.'
       });
@@ -140,6 +140,13 @@ export async function updateUser(req, res, next) {
 
     const updateFields = {};
     const allowedFields = ['name', 'email', 'password', 'description'];
+    const { name, email, password } = req.body;
+   if (name.length < 2 || email.length < 5 || password.length < 6 || !email.includes('@') || !email.includes('.')) {
+   
+      return res.status(400).json({
+        message: 'Unable to update User details, please ensure your name is at least 2 characters, email is at least 5 characters, and password is at least 6 characters long, and email is valid.'
+      });
+    }
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
         updateFields[field] = req.body[field];

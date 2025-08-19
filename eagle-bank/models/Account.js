@@ -15,7 +15,7 @@ const accountSchema = new mongoose.Schema({
   userId: { type: String, required: true, trim: true },
   accountType: { type: String, required: true, trim: true },
   accountStatus: { type: String, enum: ['active', 'inactive', 'suspended'], required: true, trim: true },
-  AccountNumber: { type: Number, required: true, trim: true },
+  AccountNumber: { type: Number, trim: true, auto: true },
   SortCode: { type: Number, required: true, trim: true },
   balance: { type: Number, required: true },
 }, { timestamps: true });
