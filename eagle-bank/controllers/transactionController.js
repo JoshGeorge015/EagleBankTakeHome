@@ -31,13 +31,14 @@ export async function createTransaction(req, res, next) {
     }
 
     const checkAccount = await Account.findOne({ userId: req.auth.userId, AccountNumber: req.body.AccountNumber, SortCode: req.body.SortCode, _id: req.params.accountId });
+
     if (!checkAccount) {
       return res.status(404).json({ message: 'Not Found - Account not found' });
     }
     if(checkAccount.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Forbidden - Inactive account' });
     }
-    if(checkAccount.userId !== req.auth.userId || checkAccount._id !== req.params.accountId || transactionType in ['withdrawal', 'deposit']) {
+    if(checkAccount.userId !== req.auth.userId || ['withdrawal', 'deposit'].includes(transactionType)==false) {
       return res.status(403).json({ message: 'Forbidden - Unable to perform this transaction' });
     }
     if(transactionType === 'withdrawal') {
@@ -52,6 +53,7 @@ export async function createTransaction(req, res, next) {
     await checkAccount.save();
 
     const TransactionObj = await Transaction.create({ userId: req.auth.userId, transactionType, AccountNumber, SortCode, amount });
+
     res.status(201).json({ TransactionObj, status: 'Transaction created successfully' });
   } catch (err) {
     next(err);
@@ -69,8 +71,11 @@ export async function createTransaction(req, res, next) {
  */
 export async function getTransactions(req, res, next) {
   try {
-    const transactions = await Transaction.find({ accountId: req.params.accountId });
-    // TODO: add fix for user transactions on another user account/non existent account
+    const checkAccount = await Account.findById(req.params.accountId);
+    if(!checkAccount){
+      return res.status(404).json({ message: 'Not Found - Account not found' });
+    }
+    const transactions = await Transaction.find({ AccountNumber: checkAccount.AccountNumber });
     res.status(200).json({ transactions, status: 'Transactions retrieved successfully' });
   } catch (err) {
     next(err);
