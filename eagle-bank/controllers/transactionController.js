@@ -7,7 +7,6 @@
  * @module controllers/transactionController
  */
 import Account from "../models/Account.js";
-import User from "../models/User.js";
 import Transaction from "../models/Transaction.js";
 import mongoose from 'mongoose';
 
@@ -30,11 +29,12 @@ export async function createTransaction(req, res, next) {
         message: 'Invalid Transaction details, please ensure your transactionType is at least 2 characters, AccountNumber, SortCode are valid numbers, and amount is a positive number.'
       });
     }
-    const checkAccount = await Account.findOne({ AccountNumber, SortCode });
-    if (!checkAccount.id) {
+
+    const checkAccount = await Account.findOne({ userId: req.auth.userId, AccountNumber: req.body.AccountNumber });
+    if (!checkAccount) {
       return res.status(404).json({ message: 'Account not found' });
     }
-    if(checkAccount.status !== 'active') {
+    if(checkAccount.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Forbidden - Inactive account' });
     }
     if(checkAccount.userId !== req.auth.userId && transactionType in ['withdrawal', 'deposit']) {
@@ -91,7 +91,6 @@ export async function getTransaction(req, res, next) {
     if (!mongoose.Types.ObjectId.isValid(transactionId)) {
       return res.status(400).json({ message: 'Invalid Transaction ID format' });
     }
-
     const transactionDetails = await Transaction.findById(transactionId);
     const AccountDetails = await Account.findById(accountId);
     if (!AccountDetails) {
@@ -107,8 +106,6 @@ export async function getTransaction(req, res, next) {
       return res.status(403).json({ message: 'Forbidden - Unable to access another user\'s transaction details' });
     }
  
-
-
     res.status(200).json({ Transaction: transactionDetails, status: 'Transaction retrieved successfully' });
   } catch (err) {
     next(err);

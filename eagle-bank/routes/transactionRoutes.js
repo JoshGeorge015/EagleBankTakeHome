@@ -13,7 +13,7 @@ import requireAuth from '../middleware/userAuth.js';
  * Express router for transaction routes.
  * @type {import('express').Router}
  */
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.post('/', requireAuth, createTransaction);
 router.get('/', requireAuth, getTransactions);

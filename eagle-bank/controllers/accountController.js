@@ -20,23 +20,23 @@ import mongoose from 'mongoose';
  */
 export async function createAccount(req, res, next) {
   try {
-    const { accountType, accountStatus, SortCode, balance } = req.body;
+    const { accountType, accountStatus, SortCode, balance, AccountNumber } = req.body;
 
-    if (!accountType || !accountStatus ||  !SortCode || !balance) {
+    if (!accountType || !accountStatus ||  !SortCode || !balance || !AccountNumber) {
       return res.status(400).json({ message: 'Bad Request - Missing required fields' });
     }
-    if (accountType.length < 2 || accountStatus.length < 5 || SortCode.length < 6 || balance < 0) {
+    if (accountType.length < 2 || accountStatus.length < 5 || SortCode.length < 6 || balance < 0 || AccountNumber.length < 6) {
       return res.status(400).json({
         message: 'Invalid Account details, please ensure your accountType is at least 2 characters, accountStatus is at least 5 characters, and SortCode is at least 6 characters long, and balance is a valid number.'
       });
     }
 
-    const existing = await Account.findOne({ userId: req.auth.userId, accountType: accountType });
+    const existing = await Account.findOne({ userId: req.auth.userId, accountType: accountType, AccountNumber: AccountNumber });
     if (existing) {
       return res.status(409).json({ message: 'Existing account found, unable to create' });
     }
 
-    const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, SortCode, balance });
+    const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, SortCode, balance, AccountNumber  });
     const UserObj = await User.findByIdAndUpdate( req.auth.userId, { bankAccount: true }); //updateUser
 
     res.status(201).json({ AccountObj: AccountObj, accountId: AccountObj.id, status: 'Account created successfully' });
