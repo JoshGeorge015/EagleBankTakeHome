@@ -26,8 +26,8 @@ export async function createUser(req, res, next) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
     if (name.length < 2 || email.length < 5 || password.length < 6 || !email.includes('@') || !email.includes('.')) {
-      return res.status(400).json({
-        message: 'Invalid User details, please ensure your name is at least 2 characters, email is at least 5 characters, and password is at least 6 characters long.'
+     return res.status(400).json({
+        message: 'Bad Request - Invalid User details, please ensure your name is at least 2 characters, email is at least 5 characters, and password is at least 6 characters long.'
       });
     }
 
@@ -63,12 +63,14 @@ export async function getUser(req, res, next) {
       return res.status(400).json({ message: 'Invalid user ID format' });
     }
 
+    
+    const user = await User.findById(userId).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
     if (req.auth.userId !== userId) {
       return res.status(403).json({ message: 'Forbidden - Unable to access another user details' });
     }
 
-    const user = await User.findById(userId).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.status(200).json({ user });
   } catch (err) {
@@ -134,6 +136,11 @@ export async function logoutUser(req, res, next) {
  */
 export async function updateUser(req, res, next) {
   try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     if (req.auth.userId !== req.params.userId) {
       return res.status(403).json({ message: 'Forbidden - Unable to update another user details' });
     }
@@ -141,10 +148,16 @@ export async function updateUser(req, res, next) {
     const updateFields = {};
     const allowedFields = ['name', 'email', 'password', 'description'];
     const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+   
+     return res.status(400).json({
+        message: 'Bad Request - Unable to update User details, name or email or password details not provided.'
+      });
+    }
    if (name.length < 2 || email.length < 5 || password.length < 6 || !email.includes('@') || !email.includes('.')) {
    
-      return res.status(400).json({
-        message: 'Unable to update User details, please ensure your name is at least 2 characters, email is at least 5 characters, and password is at least 6 characters long, and email is valid.'
+     return res.status(400).json({
+        message: 'Bad Request - Unable to update User details, please ensure your name is at least 2 characters, email is at least 5 characters, and password is at least 6 characters long, and email is valid.'
       });
     }
     allowedFields.forEach(field => {
@@ -153,17 +166,18 @@ export async function updateUser(req, res, next) {
       }
     });
 
-    const user = await User.findByIdAndUpdate(
+
+    const userUpdated = await User.findByIdAndUpdate(
       req.params.userId,
       updateFields,
       { new: true, runValidators: true }
     );
 
-    if (!user) {
+    if (!userUpdated) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const userObj = user.toObject();
+    const userObj = userUpdated.toObject();
     delete userObj.password;
 
     return res.status(200).json({ user: userObj , message: 'User updated successfully' });

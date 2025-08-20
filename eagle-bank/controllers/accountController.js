@@ -23,7 +23,7 @@ export async function createAccount(req, res, next) {
     const { accountType, accountStatus, SortCode, balance } = req.body;
 
     if (!accountType || !accountStatus ||  !SortCode || !balance) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ message: 'Bad Request - Missing required fields' });
     }
     if (accountType.length < 2 || accountStatus.length < 5 || SortCode.length < 6 || balance < 0) {
       return res.status(400).json({
@@ -39,7 +39,7 @@ export async function createAccount(req, res, next) {
     const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, SortCode, balance });
     const UserObj = await User.findByIdAndUpdate( req.auth.userId, { bankAccount: true }); //updateUser
 
-    res.status(201).json({ AccountObj: AccountObj, status: 'Account created successfully' });
+    res.status(201).json({ AccountObj: AccountObj, accountId: AccountObj.id, status: 'Account created successfully' });
   } catch (err) {
     next(err);
   }
