@@ -31,9 +31,9 @@ export async function createAccount(req, res, next) {
       });
     }
 
-    const existing = await Account.findOne({ userId: req.auth.userId, accountType: accountType, AccountNumber: AccountNumber });
+    const existing = await Account.exists({ AccountNumber: AccountNumber, SortCode: SortCode });
     if (existing) {
-      return res.status(409).json({ message: 'Existing account found, unable to create' });
+      return res.status(409).json({ message: 'Conflict - Existing account found, unable to create' });
     }
 
     const AccountObj = await Account.create({ userId: req.auth.userId, accountType, accountStatus, SortCode, balance, AccountNumber  });
@@ -109,7 +109,7 @@ export async function updateAccount(req, res, next) {
     const AccountDetails = await Account.findById(accountId);
 
     if (!AccountDetails) {
-      return res.status(404).json({ message: 'Account not found' });
+      return res.status(404).json({ message: 'Not Found - Account not found' });
     }
     if (req.auth.userId !== AccountDetails.userId) {
       return res.status(403).json({ message: 'Forbidden - Unable to update another Account details' });
@@ -124,7 +124,7 @@ export async function updateAccount(req, res, next) {
     });
 
     const AccountDetailsUpdated = await Account.findByIdAndUpdate(
-      req.params.AccountId,
+      req.params.accountId,
       updateFields,
       { new: true, runValidators: true }
     );
@@ -149,7 +149,7 @@ export async function deleteAccount(req, res, next) {
     const { accountId } = req.params;
     const AccountDetails = await Account.findById(accountId);
     if (!AccountDetails) {
-      return res.status(404).json({ message: 'Account not found' });
+      return res.status(404).json({ message: 'Not Found - Account not found' });
     }
     if (req.auth.userId !== AccountDetails.userId) {
       return res.status(403).json({ message: 'Forbidden - Unable to delete another Account' });

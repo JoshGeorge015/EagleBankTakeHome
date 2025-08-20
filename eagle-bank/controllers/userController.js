@@ -65,7 +65,7 @@ export async function getUser(req, res, next) {
 
     
     const user = await User.findById(userId).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'Not Found - User not found'});
 
     if (req.auth.userId !== userId) {
       return res.status(403).json({ message: 'Forbidden - Unable to access another user details' });
@@ -201,13 +201,13 @@ export async function deleteUser(req, res, next) {
     }
 
     const userbnkAcc = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
     if(userbnkAcc.bankAccount===true){
-      return res.status(403).json({ message: 'Unable to delete as user has bank account' });
+      return res.status(409).json({ message: 'Conflict - Unable to delete as user has bank account' });
 
     }
 
     const user = await User.findByIdAndDelete(req.params.userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.status(200).json({ message: 'User deleted' });
   } catch (err) {
