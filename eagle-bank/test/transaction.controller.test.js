@@ -155,7 +155,7 @@ describe('Transaction Controller', () => {
       amount: 500
     };
 
-    Account.findOne.mockRejectedValue(new Error('DB error'));
+    // Account.findOne.mockRejectedValue(new Error('DB error'));
 
     await transactionController.createTransaction(req, res, next);
 

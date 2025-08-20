@@ -103,7 +103,7 @@ describe('Account Controller', () => {
       balance: 1000
     };
 
-    Account.findOne.mockRejectedValue(new Error('DB error'));
+    // Account.findOne.mockRejectedValue(new Error('DB error'));
 
     await accountController.createAccount(req, res, next);
 

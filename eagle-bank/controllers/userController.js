@@ -174,13 +174,13 @@ export async function updateUser(req, res, next) {
     );
 
     if (!userUpdated) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Not Found - User not found' });
     }
 
     const userObj = userUpdated.toObject();
     delete userObj.password;
 
-    return res.status(200).json({ user: userObj , message: 'User updated successfully' });
+    return res.status(200).json({ user: userObj , message: 'Success - User updated successfully' });
   } catch (err) {
     next(err);
   }
@@ -209,7 +209,7 @@ export async function deleteUser(req, res, next) {
 
     const user = await User.findByIdAndDelete(req.params.userId);
 
-    res.status(200).json({ message: 'User deleted' });
+    res.status(200).json({ message: 'Success - User deleted' });
   } catch (err) {
     next(err);
   }
